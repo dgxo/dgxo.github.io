@@ -206,3 +206,71 @@ local grog       =  17
 ```
 
 - Use a **single** empty line to express groups when useful. Do not start blocks with a blank line. Excess empty lines harm whole-file readability.
+```lua
+local Foo = require(Common.Foo)
+
+local function gargle()
+    -- gargle gargle
+end
+
+Foo.frobulate()
+Foo.frobulate()
+
+Foo.munt()
+```
+
+- Use one statement per line. Put function bodies on new lines.
+<p class="style-good">Good:</p>
+```lua
+table.sort(stuff, function(a, b)
+    local sum = a + b
+    return math.abs(sum) > 2
+end)
+```
+<p class="style-bad">Bad:</p>
+```lua
+table.sort(stuff, function(a, b) local sum = a + b return math.abs(sum) > 2 end)
+```
+This is especially true for functions that return multiple values. Compare these two statements:
+<p class="style-bad"></p>
+```lua
+Rodux.Store.new(function(state) return state end, mockState, nil)
+Rodux.Store.new(function(state) return state, mockState end, nil)
+```
+It's much easier to spot the mistake (and much harder to make in the first place) if the function isn't on one line.
+<p class="style-bad"></p>
+```lua
+Rodux.Store.new(function(state)
+    return state
+end, mockState, nil)
+Rodux.Store.new(function(state)
+    return state, mockState
+end, nil)
+```
+
+<p class="style-exception">Exception:</p>
+```lua
+-- It's often faster and easier to read multiple guard clause if they are on one line.
+if valueIsInvalid then continue end
+```
+
+- Put a space before and after operators, except when clarifying precedence.
+<p class="style-good">Good:</p>
+```lua
+print(5 + 5 * 6^2)
+```
+<p class="style-bad">Bad:</p>
+```lua
+print(5+5* 6 ^2)
+```
+- Put a space after each comma in tables and function calls.
+<p class="style-good">Good:</p>
+```lua
+local friends = {"bob", "amy", "joe"}
+foo(5, 6, 7)
+```
+<p class="style-bad">Bad:</p>
+```lua
+local friends = {"bob","amy" ,"joe"}
+foo(5,6 ,7)
+```
