@@ -1,21 +1,21 @@
 .md-typeset .style-good {
-	color: green;
+	color: rgb(0, 173, 0);
 	font-weight: bold;
 	margin-bottom: 0;
 }
 
-.md-typeset .style-good + .codehilite {
+.md-typeset .style-good + .highlight {
 	margin-top: 0;
 	background-color: #ecffe5;
 }
 
 .md-typeset .style-bad {
-	color: red;
+	color: rgb(255, 74, 74);
 	font-weight: bold;
 	margin-bottom: 0;
 }
 
-.md-typeset .style-bad + .codehilite {
+.md-typeset .style-bad + .highlight {
 	margin-top: 0;
 	background-color: #ffecec;
 }
@@ -26,7 +26,7 @@
 	margin-bottom: 0;
 }
 
-.md-typeset .style-exception + .codehilite {
+.md-typeset .style-exception + .highlight {
 	margin-top: 0;
 	background-color: #fffaf1;
 }
