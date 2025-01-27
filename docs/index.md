@@ -204,4 +204,5 @@ local grog = 17
 local frobulator = 132
 local grog       =  17
 ```
+
 - Use a **single** empty line to express groups when useful. Do not start blocks with a blank line. Excess empty lines harm whole-file readability.
