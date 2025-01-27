@@ -1,6 +1,6 @@
 # Dog's Roblox Luau Style Guide
 
-This style guide aims to unify as much Lua code at Roblox as possible under the same style and conventions.
+This style guide aims to unify as much Luau code as possible that I write, and others edit, under the same style and conventions.
 
 This guide is designed after the [Roblox Lua Style Guide](https://roblox.github.io/lua-style-guide/). I disagreed with some guidelines, so I made my own.
 
