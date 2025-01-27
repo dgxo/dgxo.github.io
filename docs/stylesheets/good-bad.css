@@ -4,7 +4,7 @@
 	margin-bottom: 0;
 }
 
-.md-typeset .style-good + .highlight {
+.md-typeset .style-good + .highlight code {
 	margin-top: 0;
 	background-color: #ecffe5;
 }
@@ -15,7 +15,7 @@
 	margin-bottom: 0;
 }
 
-.md-typeset .style-bad + .highlight {
+.md-typeset .style-bad + .highlight code {
 	margin-top: 0;
 	background-color: #ffecec;
 }
@@ -26,7 +26,7 @@
 	margin-bottom: 0;
 }
 
-.md-typeset .style-exception + .highlight {
+.md-typeset .style-exception + .highlight code {
 	margin-top: 0;
 	background-color: #fffaf1;
 }
