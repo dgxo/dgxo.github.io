@@ -841,10 +841,10 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
 - Use `LOUD_SNAKE_CASE` names for local constants.
 - Prefix private members with an underscore, like `_camelCase`.
     - Luau does not have visibility rules, but using a character like an underscore helps make private access stand out.
-- A File's name should match the name of the object it exports.
+- A file's name should match the name of the object it exports.
     - If your module exports a single function named `doSomething`, the file should be named `doSomething`.
 
-`FooThing.lua`:
+`FooThing`:
 ```lua
 local FOO_THRESHOLD = 6
 
@@ -883,39 +883,15 @@ return FooThing
         return position.x + position.y + position.z
     end
     ```
-    <p class="style-exception">Exception:</p>
-    ```lua
-    -- Although not recommended for readability, Luau's type system is smart enough to
-    -- infer the type of a function's return value from its return statement.
-    local function doSomething(a, b)
-        return a + b
-    end
-    ```
 
-## Yielding
-Do not call yielding functions on the main task. Wrap them in `coroutine.wrap` or `task.delay`, and consider exposing a Promise or Promise-like async interface for your own functions.
-
-#### Pros:
-- Roblox's yielding model makes calling asynchronous tasks transparent to the user, which lets users call complicated functions without understanding coroutines or other async primitives.
-
-#### Cons:
-- Unintended yielding can cause hard-to-track data races. Simple code involving callbacks can cause confusing bugs if the input callback yields.
-    ```lua
-    local value = 0
-
-    local function doSomething(callback)
-        local newValue = value + 1
-        callback(newValue)
-        value = newValue
-    end
-    ```
+    - Luau can infer function argument and return types in certain situations, but it's best to be explicit.
 
 ## Error Handling
 When writing functions that can fail, return `success, result`, use a `Result` type, or use an async primitive that encodes failure, like `Promise`.
 
 Do not throw errors except when validating correct usage of a function.
 ```lua
-local function thisCanFail(someValue)
+local function thisCanFail(someValue: string): boolean, string
     assert(typeof(someValue) == "string", "someValue must be a string!")
 
     if success() then
