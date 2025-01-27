@@ -366,6 +366,7 @@ Foo.munt()
     ```
 - Break list-like tables onto multiple lines however it makes sense.
     - Make sure to follow the line length limit! 
+    
     ```lua
     local libs = {"roact", "rodux", "testez", "cryo", "otter"}
 
@@ -453,11 +454,13 @@ Foo.munt()
         anotherLongKey = aLongValue
     })
     ```
-    - For long expressions try and add newlines between logical subunits. If you're adding up lots of terms, place each term on its own line. If you have parenthesized subexpressions, put each subexpression on a newline.
-        - Place the operator at the beginning of the new line. This makes it clearer at a glance that this is a continuation of the previous line.
-        - If you have to need to add newlines within a parenthesized subexpression, reconsider if you can't use temporary variables. If you still can't, add a new level of indentation for the parts of the statement inside the open parentheses much like you would with nested tables.
-        - Don't put extra parentheses around the whole expression. This is necessary in Python, but Lua doesn't need anything special to indicate multiline expressions.
-    - For long conditions in `if` statements, put the condition in its own indented section and place the `then` on its own line to separate the condition from the body of the `if` block. Break up the condition as any other long expression.
+
+- For long expressions try and add newlines between logical subunits. If you're adding up lots of terms, place each term on its own line. If you have parenthesized subexpressions, put each subexpression on a newline.
+    - Place the operator at the beginning of the new line. This makes it clearer at a glance that this is a continuation of the previous line.
+    - If you have to need to add newlines within a parenthesized subexpression, reconsider if you can't use temporary variables. If you still can't, add a new level of indentation for the parts of the statement inside the open parentheses much like you would with nested tables.
+    - Don't put extra parentheses around the whole expression. This is necessary in Python, but Lua doesn't need anything special to indicate multiline expressions.
+
+- For long conditions in `if` statements, put the condition in its own indented section and place the `then` on its own line to separate the condition from the body of the `if` block. Break up the condition as any other long expression.
     <p class="style-good">Good:</p>
     ```lua
     if
@@ -597,6 +600,7 @@ Foo.munt()
     ```
 - While `if` expressions do support `elseif`, it should be used sparingly. If your set of conditions is complicated enough to need several elseifs, then it may be difficult to read as a single expression. When using an `if` expression that includes `elseif` clauses is preferred, put the `elseif (condition)` then on a new line just like `then` and `else`.
     - This is a tradeoff. It would be more consistent to put the second then on a newline indented again, but then you end up deeply indented, which isn't good.
+    
     ```lua
     local scale = if someFlag() then 1 elseif someOtherFlag() then 0.5 else 2
 
