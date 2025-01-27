@@ -859,6 +859,39 @@ end
 return FooThing
 ```
 
+## Types
+- Always give a type to uninitialised variables. 
+    <p class="style-good">Good:</p>
+    ```lua
+    local currentPosition: Vector3
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local currentPosition
+    ```
+- Use type annotations on all function arguments and return values.
+    <p class="style-good">Good:</p>
+    ```lua
+    local function doSomething(position: Vector3): number
+        return position.X + position.Y + position.Z
+    end
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    -- Here, when using auto-complete, no argument or return type is shown.
+    local function doSomething(position)
+        return position.x + position.y + position.z
+    end
+    ```
+    <p class="style-exception">Exception:</p>
+    ```lua
+    -- Although not recommended for readability, Luau's type system is smart enough to
+    -- infer the type of a function's return value from its return statement.
+    local function doSomething(a, b)
+        return a + b
+    end
+    ```
+
 ## Yielding
 Do not call yielding functions on the main task. Wrap them in `coroutine.wrap` or `task.delay`, and consider exposing a Promise or Promise-like async interface for your own functions.
 
