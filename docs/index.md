@@ -15,7 +15,7 @@ Where the term file is mentioned, it can refer to any kind of `Script`.
 - Avoid magic, such as surprising or dangerous Luau features:
     - Magical code is really nice to use, until something goes wrong. Then no one knows why it broke or how to fix it.
     - Metatables are a good example of a powerful feature that should be used with care.
-- Be consistent with idiomatic Lua when appropriate.
+- Be consistent with idiomatic Luau when appropriate.
 
 ## File Structure
 Files should consist of these things (if present) in order:
@@ -86,7 +86,7 @@ local Bar = require(Foobar.Bar)
 ```
 
 ## Metatables
-Metatables are an incredibly powerful Lua feature that can be used to overload operators, implement prototypical inheritance, and tinker with limited object lifecycle.
+Metatables are an incredibly powerful Luau feature that can be used to overload operators, implement prototypical inheritance, and tinker with limited object lifecycle.
 Ideally, metatables should be limited to a couple of cases:
 - Implementing prototype-based classes
 - Guarding against typos
@@ -101,7 +101,7 @@ local MyClass = {}
 ```
 Next, we assign the __index member on the class back to itself. This is a handy trick that lets us use the class's table as the metatable for instances as well.
 
-When we construct an instance, we'll tell Lua to use our __index value to find values that are missing in our instances. It's sort of like prototype in JavaScript, if you're familiar.
+When we construct an instance, we'll tell Luau to use our __index value to find values that are missing in our instances. It's sort of like prototype in JavaScript, if you're familiar.
 ```lua
 MyClass.__index = MyClass
 ```
@@ -124,7 +124,7 @@ function MyClass.new(property: number): ClassType
         property = property,
     }
 
-    -- Tell Lua to fall back to looking in MyClass.__index for missing fields.
+    -- Tell Luau to fall back to looking in MyClass.__index for missing fields.
     setmetatable(self, MyClass)
 
     return self
@@ -162,7 +162,7 @@ end
 ```
 
 ### Guarding against typos
-Indexing into a table in Lua gives you `nil` if the key isn't present, which can cause errors that are difficult to trace!
+Indexing into a table in Luau gives you `nil` if the key isn't present, which can cause errors that are difficult to trace!
 Our other major use case for metatables is to prevent certain forms of this problem. For types that act like enums, we can carefully apply an `__index` metamethod that throws:
 ```lua
 local MyEnum = {
@@ -458,7 +458,7 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
 - For long expressions try and add newlines between logical subunits. If you're adding up lots of terms, place each term on its own line. If you have parenthesized subexpressions, put each subexpression on a newline.
     - Place the operator at the beginning of the new line. This makes it clearer at a glance that this is a continuation of the previous line.
     - If you have to need to add newlines within a parenthesized subexpression, reconsider if you can't use temporary variables. If you still can't, add a new level of indentation for the parts of the statement inside the open parentheses much like you would with nested tables.
-    - Don't put extra parentheses around the whole expression. This is necessary in Python, but Lua doesn't need anything special to indicate multiline expressions.
+    - Don't put extra parentheses around the whole expression. This is necessary in Python, but Luau doesn't need anything special to indicate multiline expressions.
 
 - For long conditions in `if` statements, put the condition in its own indented section and place the `then` on its own line to separate the condition from the body of the `if` block. Break up the condition as any other long expression.
     <p class="style-good">Good:</p>
@@ -678,6 +678,124 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
     ```
 
 ## Functions
-Keep the number of arguments to a given function small, preferably 1 or 2.
+- Keep the number of arguments to a given function small, preferably 1 or 2.
+- Always use parentheses when calling a function. Luau allows you to skip them in many cases, but the results are typically much harder to parse.
+    <p class="style-good">Good:</p>
+    ```lua
+    local x = doSomething("home")
+    local y = doSomethingElse({u = 1, v = 2})
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local x = doSomething "home"
+    local y = doSomethingElse{u = 1, v = 2}
+    ```
+    Of particular note, the last example - using the curly braces as if they were function call syntax - is common in other Lua codebases, but while it's more readable than other ways of using this feature, for consistency we don't use it in our codebase.
+- Declare named functions using function-prefix syntax. Non-member functions should always be local.
+    <p class="style-good">Good:</p>
+    ```lua
+    local function add(a, b)
+        return a + b
+    end
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    -- This is a global!
+    function add(a, b)
+        return a + b
+    end
 
-Always use parentheses when calling a function. Lua allows you to skip them in many cases, but the results are typically much harder to parse.
+    local add = function(a, b)
+        return a + b
+    end
+    ```
+    <p class="style-exception">Exception:</p>
+    ```lua
+    -- An exception can be made for late-initializing functions in conditionals:
+    local doSomething
+
+    if CONDITION then
+        function doSomething()
+            -- Version of doSomething with CONDITION enabled
+        end
+    else
+        function doSomething()
+            -- Version of doSomething with CONDITION disabled
+        end
+    end
+    ```
+    - When declaring a function inside a table, use function-prefix syntax. Differentiate between `.` and `:` to denote intended calling convention.
+        <p class="style-good">Good:</p>
+        ```lua
+        -- This function should be called as Frobulator.new()
+        function Frobulator.new()
+            return {}
+        end
+
+        -- This function should be called as Frobulator:frob()
+        function Frobulator:frob()
+            print("Frobbing", self)
+        end
+        ```
+        <p class="style-bad">Bad:</p>
+        ```lua
+        function Frobulator.garb(self)
+            print("Frobbing", self)
+        end
+
+        Frobulator.jarp = function()
+            return {}
+        end
+        ```
+
+## Comments
+
+- Wrap comments to 80 columns wide.
+    - It's easier to read comments with shorter lines, but fitting code into 80 columns can be challenging.
+- Use single line comments for inline notes:
+    - If the comment spans multiple lines, use multiple single-line comments.
+    - VS Code has an automatic wrap feature (++Alt+Z++ on Windows) to help with this.
+
+    ```lua
+    -- This condition is really important because the world would blow up if it
+    -- were missing.
+    if not foo then
+        stopWorldFromBlowingUp()
+    end
+    ```
+- Use block comments for documenting items:
+    - Use a block comment at the top of files to describe their purpose.
+    - Use a block comment before functions or objects to describe their intent.
+
+    ```lua
+    --[[
+        Shuts off the cosmic moon ray immediately.
+
+        Should only be called within 15 minutes of midnight Mountain Standard
+        Time, or the cosmic moon ray may be damaged.
+    ]]
+    local function stopCosmicMoonRay()
+    end
+    ```
+- Comments should focus on why code is written a certain way instead of what the code is doing.
+    <p class="style-good">Good:</p>
+    ```lua
+    -- Without this condition, the aircraft hangar would fill up with water.
+    if waterLevelTooHigh() then
+        drainHangar()
+    end
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    -- Check if the water level is too high.
+    if waterLevelTooHigh() then
+        -- Drain the hangar
+        drainHangar()
+    end
+    ```
+- No section comments.
+    Comments that only exist to break up a large file are a code stink; you probably need to find some way to make your file smaller instead of working around that problem with section comments. Comments that only exist to demark already obvious groupings of code (e.g. --- VARIABLES ---) and overly stylized comments can actually make the code harder to read, not easier. Additionally, when writing section headers, you (and anyone else editing the file later) have to be thorough to avoid confusing the reader with questions of where sections end.
+
+    Some examples of ways of breaking up files:
+    - Move inner classes and static functions into their own files, which aren't included in the public API. This also makes testing those classes and functions easier.
+    - Check if there are any existing libraries that can simplify your code. If you're writing something and think that you could make part of this into a library, there's a good chance someone already has.
