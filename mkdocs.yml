@@ -9,6 +9,7 @@ theme:
    favicon: assets/favicon.ico
    features:
       - navigation.footer
+      - content.code.copy
    palette:
       scheme: slate
       primary: blue

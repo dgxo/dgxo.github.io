@@ -273,3 +273,20 @@ Foo.munt()
     local friends = {"bob","amy" ,"joe"}
     foo(5,6 ,7)
     ```
+- When creating blocks, inline any opening syntax elements.
+<p class="style-good">Good:</p>
+    ```lua
+    local foo = {
+    bar = 2,
+}
+
+if foo then
+    -- do something
+end
+
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local friends = {"bob","amy" ,"joe"}
+    foo(5,6 ,7)
+    ```
