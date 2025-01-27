@@ -263,6 +263,7 @@ Foo.munt()
     print(5+5* 6 ^2)
     ```
 - Put a space after each comma in tables and function calls.
+    - Don't include spaces between the brackets and elements of a table.
     <p class="style-good">Good:</p>
     ```lua
     local friends = {"bob", "amy", "joe"}
@@ -293,29 +294,290 @@ Foo.munt()
 - Avoid putting curly braces for tables on their own line. Doing so harms readability, since it forces the reader to move to another line in an awkward spot in the statement.
     <p class="style-good">Good:</p>
     ```lua
-local foo = {
-    bar = {
-        baz = "baz",
-    },
-}
+    local foo = {
+        bar = {
+            baz = "baz",
+        },
+    }
 
-frob({
-    x = 1,
-})
+    frob({
+        x = 1,
+    })
     ```
     <p class="style-bad">Bad:</p>
     ```lua
-local foo =
-{
-    bar =
-
+    local foo =
     {
-        baz = "baz",
-    },
-}
+        bar =
 
-frob(
-{
-    x = 1,
-})
-```
+        {
+            baz = "baz",
+        },
+    }
+
+    frob(
+    {
+        x = 1,
+    })
+    ```
+    <p class="style-exception">Exception:</p>
+    ```lua
+    -- In function calls with large inline tables or functions, sometimes it's
+    -- more clear to put braces and functions on new lines:
+    foo(
+        {
+            type = "foo",
+        },
+        function(something)
+            print("Hello," something)
+        end
+    )
+
+    -- As opposed to:
+    foo({
+        type = "foo",
+    }, function(something) -- How do we indent this line?
+        print("Hello,", something)
+    end)
+    ```
+
+### Newlines in Long Expressions
+- First, try and break up the expression so that no one part is long enough to need newlines. This isn't always the right answer, as keeping an expression together is sometimes more readable than trying to parse how several small expressions relate, but it's worth pausing to consider which case you're in.
+- It is often worth breaking up tables and arrays with more than two or three keys, or with nested sub-tables, even if it doesn't exceed the line length limit. Shorter, simpler tables can stay on one line though.
+- Prefer adding the extra trailing comma to the elements within a multiline table or array. This makes it easier to add new items or rearrange existing items.
+- Break dictionary-like tables with more than a couple keys onto multiple lines.
+    <p class="style-good">Good:</p>
+    ```lua
+    local foo = {type = "foo"}
+
+    local bar = {
+        type = "bar",
+        phrase = "hooray",
+    }
+
+    -- It's also okay to use multiple lines for a single field
+    local baz = {
+        type = "baz",
+    }
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local stuff = {hello = "world", hola = "mundo", howdy = "y'all", sup = "homies"}
+    ```
+- Break list-like tables onto multiple lines however it makes sense.
+    - Make sure to follow the line length limit! 
+    ```lua
+    local libs = {"roact", "rodux", "testez", "cryo", "otter"}
+
+    -- You can break these onto multiple lines, which makes diffs cleaner:
+    local libs = {
+        "roact",
+        "rodux",
+        "testez",
+        "cryo",
+        "otter",
+    }
+
+    -- We can also group them, if grouping has useful information:
+    local libs = {
+        "roact", "rodux", "cryo",
+
+        "testez", "otter",
+    }
+    ```
+- For long argument lists or longer, nested tables, prefer to expand all the subtables. This makes for the cleanest diffs as further changes are made.
+    ```lua
+        local aTable = {
+        {
+            aLongKey = aLongValue,
+            anotherLongKey = anotherLongValue,
+        },
+        {
+            aLongKey = anotherLongValue,
+            anotherLongKey = aLongValue,
+        },
+    }
+
+    doSomething(
+        {
+            aLongKey = aLongValue,
+            anotherLongKey = anotherLongValue,
+        },
+        {
+            aLongKey = anotherLongValue,
+            anotherLongKey = aLongValue,
+        }
+    )
+    ```
+
+    In some situations where we only ever expect table literals, the following is acceptable, though there's a chance automated tooling could change this later. In particular, this comes up a lot in Roact code (`doSomething` being `Roact.createElement`).
+    ```lua
+    local aTable = {{
+        aLongKey = aLongValue,
+        anotherLongKey = anotherLongValue,
+    }, {
+        aLongKey = anotherLongValue,
+        anotherLongKey = aLongValue,
+    }}
+
+    doSomething({
+        aLongKey = aLongValue,
+        anotherLongKey = anotherLongValue,
+    }, {
+        aLongKey = anotherLongValue,
+        anotherLongKey = aLongValue,
+    })
+    ```
+    However, this case is less acceptable if there are any non-tables added to the mix. In this case, you should use the style above.
+    <p class="style-good">Good:</p>
+    ```lua
+    doSomething(
+        {
+            aLongKey = aLongValue,
+            anotherLongKey = anotherLongValue
+        },
+        notATableLiteral,
+        {
+            aLongKey = anotherLongValue,
+            anotherLongKey = aLongValue
+        }
+    )
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    doSomething({
+        aLongKey = aLongValue,
+        anotherLongKey = anotherLongValue
+    }, notATableLiteral, {
+        aLongKey = anotherLongValue,
+        anotherLongKey = aLongValue
+    })
+    ```
+    - For long expressions try and add newlines between logical subunits. If you're adding up lots of terms, place each term on its own line. If you have parenthesized subexpressions, put each subexpression on a newline.
+        - Place the operator at the beginning of the new line. This makes it clearer at a glance that this is a continuation of the previous line.
+        - If you have to need to add newlines within a parenthesized subexpression, reconsider if you can't use temporary variables. If you still can't, add a new level of indentation for the parts of the statement inside the open parentheses much like you would with nested tables.
+        - Don't put extra parentheses around the whole expression. This is necessary in Python, but Lua doesn't need anything special to indicate multiline expressions.
+    - For long conditions in `if` statements, put the condition in its own indented section and place the `then` on its own line to separate the condition from the body of the `if` block. Break up the condition as any other long expression.
+    <p class="style-good">Good:</p>
+    ```lua
+    if
+        someReallyLongCondition
+        and someOtherReallyLongCondition
+        and somethingElse
+    then
+        doSomething()
+        doSomethingElse()
+    end
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    if someReallyLongCondition and someOtherReallyLongCondition
+        and somethingElse then
+        doSomething()
+        doSomethingElse()
+    end
+
+    if someReallyLongCondition and someOtherReallyLongCondition
+            and somethingElse then
+        doSomething()
+        doSomethingElse()
+    end
+
+    if someReallyLongCondition and someOtherReallyLongCondition
+        and somethingElse then
+            doSomething()
+            doSomethingElse()
+    end
+    ```
+
+### if-then-else expressions
+- Use `if-then-else` expressions over the `x and y or z` pattern for selecting a value. They're safer, faster and more readable.
+    <p class="style-good">Good:</p>
+    ```lua
+    local scale = if someFlag() then 1 else 2
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local scale = someFlag() and 1 or 2
+    ```
+    - `if` expressions require an `else`. In some cases, we only use `someFlag()` and `someObject` without the `or`. It's fine to either leave this as is (it doesn't have the same safety issues) or convert it to `if someFlag() then someObject else nil`.
+- Don't get carried away trying to fit everything into one statement though. These work best when they comfortably fit on one line.
+- For multiple line `if` expressions, put the `then` and `else` at the start of new lines, each indented once.
+    <p class="style-good">Good:</p>
+    ```lua
+    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName()
+        then 1
+        else 2
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName() then 1
+        else 2
+
+    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName()
+        then 1 else 2
+
+    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName() then
+        1 else 2
+    ```
+- If the `if` expression won't fit on three lines, convert it to a normal `if` statement.
+    <p class="style-good">Good:</p>
+    ```lua
+    local scale
+    if
+        someReallyLongFlagName()
+        or someOtherReallyLongFlagName()
+    then
+        scale = Vector2.new(1, 1) + someVectorOffset
+            + someOtherVector
+    else
+        scale = Vector2.new(1, 1) + someNewVectorOffset
+            + someNewOtherVector
+    end
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local scale = if someReallyLongFlagName()
+        or someOtherReallyLongFlagName()
+        then Vector2.new(1, 1) + someVectorOffset
+            + someOtherVector
+        else Vector2.new(1, 1) + someNewVectorOffset
+            + someNewOtherVector
+    ```
+- An exception to the above is if the `if` expression is in the middle of a much larger expression (e.g. a table definition or function call) and converting it to a normal `if` statement would involve copying a large number of lines.
+    <p class="style-good">Good:</p>
+    ```lua
+    local thing = makeSomething("Foo", {
+        OneChild = if someFlag()
+            then makeSomething("Bar", {
+                scale = 1,
+            })
+            else makeSomething("Bar", {
+                scale = 2,
+            }),
+        TwoChild = makeSomething("Baz"),
+    })
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local thing = makeSomething("Foo", {
+        OneChild = if someFlag() then
+            makeSomething("Bar", {
+                scale = 1,
+            })
+        else
+            makeSomething("Bar", {
+                scale = 2,
+            }),
+        TwoChild = makeSomething("Baz"),
+    })
+
+    local thing = makeSomething("Foo", {
+        OneChild = if someFlag() then makeSomething("Bar", {
+            scale = 1,
+        }) else makeSomething("Bar", {
+            scale = 2,
+        }),
+        TwoChild = makeSomething("Baz"),
+    })
+    ```
