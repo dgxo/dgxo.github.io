@@ -13,7 +13,7 @@ theme:
    palette:
       scheme: slate
       primary: blue
-      accent: deep purple
+      accent: blue
 
 markdown_extensions:
    - attr_list
