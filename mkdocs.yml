@@ -35,6 +35,7 @@ markdown_extensions:
         alternate_style: true
    - admonition
    - pymdownx.details
+   - pymdownx.keys
 
 extra:
    social:

@@ -581,3 +581,99 @@ Foo.munt()
         TwoChild = makeSomething("Baz"),
     })
     ```
+- If the condition itself is too long to fit on one line, use a helper variable.
+    <p class="style-good">Good:</p>
+    ```lua
+    local useNewScale = someReallyReallyLongFunctionName()
+        and someOtherReallyLongFunctionName()
+    local scale = if useNewScale then 1 else 2
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    local scale = if someReallyReallyLongFunctionName()
+        and someOtherReallyLongFunctionName()
+        then 1
+        else 2
+    ```
+- While `if` expressions do support `elseif`, it should be used sparingly. If your set of conditions is complicated enough to need several elseifs, then it may be difficult to read as a single expression. When using an `if` expression that includes `elseif` clauses is preferred, put the `elseif (condition)` then on a new line just like `then` and `else`.
+    - This is a tradeoff. It would be more consistent to put the second then on a newline indented again, but then you end up deeply indented, which isn't good.
+    ```lua
+    local scale = if someFlag() then 1 elseif someOtherFlag() then 0.5 else 2
+
+    local thing = makeSomething("Foo", {
+        OneChild = if someFlag()
+            then makeSomething("Bar", {
+                scale = 1,
+            })
+            elseif someOtherFlag() then makeSomething("Bar", {
+                scale = 0.5,
+            })
+            else makeSomething("Bar", {
+                scale = 2,
+            }),
+        TwoChild = makeSomething("Baz"),
+    })
+    ```
+
+## Blocks
+- Don't use parentheses around the conditions in `if`, `while`, or `repeat` blocks. They aren't necessary in Lua!
+    ```lua
+    if CONDITION then
+    end
+
+    while CONDITION do
+    end
+
+    repeat
+    until CONDITION
+    ```
+- Use `do` blocks if limiting the scope of a variable is useful.
+    ```lua
+    local getId
+    do
+        local lastId = 0
+        getId = function()
+            lastId = lastId + 1
+            return lastId
+        end
+    end
+    ```
+
+## Literals
+- Use double quotes when declaring string literals.
+    - Using single quotes means we have to escape apostrophes, which are often useful in English words.
+    - Empty strings are easier to identify with double quotes, because in some fonts two single quotes might look like a single double quote (`""` vs `''`).
+    <p class="style-good">Good:</p>
+    ```lua
+    print("Here's a message!")
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+    print('Here\'s a message!')
+    ```
+    - Single quotes are acceptable if the string contains double quotes to reduce escape sequences.
+    <p class="style-exception">Exception:</p>
+    ```lua
+    print('Quoth the raven, "Nevermore"')
+    ```
+    - If the string contains both single and double quotes, prefer double quotes on the outside, but use your best judgement.
+
+## Tables
+- Avoid tables with both list-like and dictionary-like keys.
+    - Iterating over these mixed tables is troublesome.
+- Don't specify `pairs` or `ipairs` as the iterator when iterating over a table. Luau supports `for key, value in table` syntax, which is generally more readable.
+    - The argument that this helps clarify what kind of table we're expecting is irrelevant with types annotations.
+- Add trailing commas in multi-line tables.
+    - This lets us re-sort lines with a single keypress (++Alt+up++ and ++Alt+down++).
+    ```lua
+    local frobs = {
+        andrew = true,
+        billy = true,
+        caroline = true,
+    }
+    ```
+
+## Functions
+Keep the number of arguments to a given function small, preferably 1 or 2.
+
+Always use parentheses when calling a function. Lua allows you to skip them in many cases, but the results are typically much harder to parse.
