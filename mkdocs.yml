@@ -10,7 +10,7 @@ theme:
    features:
       - navigation.footer
    palette:
-      scheme: default
+      scheme: slate
       primary: blue
       accent: deep purple
 
