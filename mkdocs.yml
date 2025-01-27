@@ -3,8 +3,8 @@ site_url: https://style.dgox.de
 theme:
    name: material
    font:
-      text: Merriweather Sans
-      code: Red Hat Mono
+      text: Inter
+      code: Fira Code
    logo: assets/logo.png
    favicon: assets/favicon.ico
    features:
