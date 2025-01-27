@@ -1,0 +1,32 @@
+.md-typeset .style-good {
+	color: rgb(0, 173, 0);
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+.md-typeset .style-good + .highlight code {
+	margin-top: 0;
+	background-color: rgb(30, 67, 0);
+}
+
+.md-typeset .style-bad {
+	color: rgb(255, 74, 74);
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+.md-typeset .style-bad + .highlight code {
+	margin-top: 0;
+	background-color: rgb(52, 0, 0);
+}
+
+.md-typeset .style-exception {
+	color: orange;
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+.md-typeset .style-exception + .highlight code {
+	margin-top: 0;
+	background-color: rgb(59, 38, 0);
+}
