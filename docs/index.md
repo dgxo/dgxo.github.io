@@ -497,13 +497,13 @@ Foo.munt()
 - Use `if-then-else` expressions over the `x and y or z` pattern for selecting a value. They're safer, faster and more readable.
     <p class="style-good">Good:</p>
     ```lua
-    local scale = if someFlag() then 1 else 2
+    local scale = if someCondition then 1 else 2
     ```
     <p class="style-bad">Bad:</p>
     ```lua
-    local scale = someFlag() and 1 or 2
+    local scale = someCondition and 1 or 2
     ```
-    - `if` expressions require an `else`. In some cases, we only use `someFlag()` and `someObject` without the `or`. It's fine to either leave this as is (it doesn't have the same safety issues) or convert it to `if someFlag() then someObject else nil`.
+    - `if` expressions require an `else`. In some cases, we only use `someCondition` and `someObject` without the `or`. It's fine to either leave this as is (it doesn't have the same safety issues) or convert it to `if someCondition then someObject else nil`.
 - Don't get carried away trying to fit everything into one statement though. These work best when they comfortably fit on one line.
 - For multiple line `if` expressions, put the `then` and `else` at the start of new lines, each indented once.
     <p class="style-good">Good:</p>
@@ -551,7 +551,7 @@ Foo.munt()
     <p class="style-good">Good:</p>
     ```lua
     local thing = makeSomething("Foo", {
-        OneChild = if someFlag()
+        OneChild = if someCondition
             then makeSomething("Bar", {
                 scale = 1,
             })
@@ -564,7 +564,7 @@ Foo.munt()
     <p class="style-bad">Bad:</p>
     ```lua
     local thing = makeSomething("Foo", {
-        OneChild = if someFlag() then
+        OneChild = if someCondition then
             makeSomething("Bar", {
                 scale = 1,
             })
@@ -576,7 +576,7 @@ Foo.munt()
     })
 
     local thing = makeSomething("Foo", {
-        OneChild = if someFlag() then makeSomething("Bar", {
+        OneChild = if someCondition then makeSomething("Bar", {
             scale = 1,
         }) else makeSomething("Bar", {
             scale = 2,
@@ -600,16 +600,16 @@ Foo.munt()
     ```
 - While `if` expressions do support `elseif`, it should be used sparingly. If your set of conditions is complicated enough to need several elseifs, then it may be difficult to read as a single expression. When using an `if` expression that includes `elseif` clauses is preferred, put the `elseif (condition)` then on a new line just like `then` and `else`.
     - This is a tradeoff. It would be more consistent to put the second then on a newline indented again, but then you end up deeply indented, which isn't good.
-    
+
     ```lua
-    local scale = if someFlag() then 1 elseif someOtherFlag() then 0.5 else 2
+    local scale = if someCondition then 1 elseif someOtherCondition then 0.5 else 2
 
     local thing = makeSomething("Foo", {
-        OneChild = if someFlag()
+        OneChild = if someCondition
             then makeSomething("Bar", {
                 scale = 1,
             })
-            elseif someOtherFlag() then makeSomething("Bar", {
+            elseif someOtherCondition then makeSomething("Bar", {
                 scale = 0.5,
             })
             else makeSomething("Bar", {
