@@ -24,6 +24,7 @@ Files should consist of these things (if present) in order:
 1. Services used by the file, using `GetService`
     - Services should never be fetched anywhere else in the file, or by indexing `game`
 1. Module imports, using `require`
+    - Use the name of the module for its variable name
 1. Constants
 1. Variables and functions
 1. (if module) The object the module returns
@@ -668,7 +669,7 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
 - Don't specify `pairs` or `ipairs` as the iterator when iterating over a table. Luau supports `for key, value in table` syntax, which is generally more readable.
     - The argument that this helps clarify what kind of table we're expecting is irrelevant with types annotations.
 - Add trailing commas in multi-line tables.
-    - This lets us re-sort lines with a single keypress (++Alt+up++ and ++Alt+down++).
+    - This lets us re-sort lines with a single keypress (++alt+up++ and ++alt+down++).
     ```lua
     local frobs = {
         andrew = true,
@@ -754,7 +755,7 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
     - It's easier to read comments with shorter lines, but fitting code into 80 columns can be challenging.
 - Use single line comments for inline notes:
     - If the comment spans multiple lines, use multiple single-line comments.
-    - VS Code has an automatic wrap feature (++Alt+Z++ on Windows) to help with this.
+    - VS Code has an automatic wrap feature (++alt+z++ on Windows) to help with this.
 
     ```lua
     -- This condition is really important because the world would blow up if it
@@ -793,9 +794,112 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
         drainHangar()
     end
     ```
+
 - No section comments.
+
     Comments that only exist to break up a large file are a code stink; you probably need to find some way to make your file smaller instead of working around that problem with section comments. Comments that only exist to demark already obvious groupings of code (e.g. --- VARIABLES ---) and overly stylized comments can actually make the code harder to read, not easier. Additionally, when writing section headers, you (and anyone else editing the file later) have to be thorough to avoid confusing the reader with questions of where sections end.
 
     Some examples of ways of breaking up files:
+
     - Move inner classes and static functions into their own files, which aren't included in the public API. This also makes testing those classes and functions easier.
     - Check if there are any existing libraries that can simplify your code. If you're writing something and think that you could make part of this into a library, there's a good chance someone already has.
+
+    If you can't break the file up, and still feel like you need section headings, consider these alternatives.
+
+    - If you want to put a section header on a group of functions, put that information in a block comment attached to the first function in that section. You should still make sure the comment is about the function its attached to, but it can also include information about the section as a whole. Try and write the comment in a way that makes it clear what's included in the section.
+
+        ```lua
+        --[[
+            All of the readX functions return the next token from the string
+            passed in to the Reader or returns nil if the next token doesn't
+            match the type the function is trying to read.
+
+            local test = "123 ABC"
+            i = reader:readInt()
+            print(i, ",", test.remaining) -- 123 , ABC
+
+            readInt reads an integer, positive or negative.
+        ]]
+        function Reader:readInt() -- ...
+
+        -- readFloat reads a floating point number, but does not accept
+        -- scientific notation
+        function Reader:readFloat() -- ...
+        ```
+
+    - The same can be done for a group of variables in some cases. All the same caveats apply though, and you have to consider whether one block comment or a normal comment on each variable (or even using just whitespace to separate groups) would be more readable.
+    - General organization of your code can aid readability while making logical sections more obvious as well. Module level variables and functions can appear in any order, so you can sometimes put a group of variables above a group of functions to make a section.
+
+## Naming
+
+- Spell out words fully! Abbreviations generally make code easier to write, but harder to read.
+- Use `PascalCase` names for class and enum-like objects.
+- Use `PascalCase` for all Roblox APIs. `camelCase` APIs are mostly deprecated, but still work for now.
+- Use `camelCase` names for local variables, member values, and functions.
+- For acronyms within names, don't capitalize the whole thing. For example, `aJsonVariable` or `MakeHttpCall`.
+- The exception to this is when the abbreviation represents a set. For example, in `anRGBValue` or `GetXYZ`. In these cases, RGB should be treated as an abbreviation of `RedGreenBlue` and not as an acronym.
+- Use `LOUD_SNAKE_CASE` names for local constants.
+- Prefix private members with an underscore, like `_camelCase`.
+    - Luau does not have visibility rules, but using a character like an underscore helps make private access stand out.
+- A File's name should match the name of the object it exports.
+    - If your module exports a single function named `doSomething`, the file should be named `doSomething`.
+
+`FooThing.lua`:
+```lua
+local FOO_THRESHOLD = 6
+
+local FooThing = {}
+
+FooThing.someMemberConstant = 5
+
+function FooThing.go()
+    print("Foo Delta:", FooThing.someMemberConstant - FOO_THRESHOLD)
+end
+
+return FooThing
+```
+
+## Yielding
+Do not call yielding functions on the main task. Wrap them in `coroutine.wrap` or `task.delay`, and consider exposing a Promise or Promise-like async interface for your own functions.
+
+#### Pros:
+- Roblox's yielding model makes calling asynchronous tasks transparent to the user, which lets users call complicated functions without understanding coroutines or other async primitives.
+
+#### Cons:
+- Unintended yielding can cause hard-to-track data races. Simple code involving callbacks can cause confusing bugs if the input callback yields.
+    ```lua
+    local value = 0
+
+    local function doSomething(callback)
+        local newValue = value + 1
+        callback(newValue)
+        value = newValue
+    end
+    ```
+
+## Error Handling
+When writing functions that can fail, return `success, result`, use a `Result` type, or use an async primitive that encodes failure, like `Promise`.
+
+Do not throw errors except when validating correct usage of a function.
+```lua
+local function thisCanFail(someValue)
+    assert(typeof(someValue) == "string", "someValue must be a string!")
+
+    if success() then
+        return true, "Congratulations! You won!"
+    else
+        return false, Error.new("ERR_BLAH", "Something horrible failed!")
+    end
+end
+```
+
+#### Pros:
+- Using exceptions lets unhandled errors bubble up 'automatically' to your caller.
+- Stack traces are automatically attached to errors.
+
+#### Cons:
+- Luau can only throw strings as errors, which makes distinguishing between them very difficult.
+- Exceptions are not encoded into a function's contract explicitly. By returning `success, result`, you force your caller to consider whether an error will happen.
+
+#### Exceptions:
+- When calling functions that communicate failure by throwing, wrap calls in pcall and make it clear via comment what kinds of errors you're expecting to handle.
