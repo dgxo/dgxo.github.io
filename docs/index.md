@@ -193,7 +193,6 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
 - Add a newline at the end of the file.
 - No vertical alignment!
     - Vertical alignment makes code more difficult to edit and often gets messed up by subsequent editors.
-
 <p class="style-good">Good:</p>
 ```lua
 local frobulator = 132
