@@ -205,18 +205,18 @@ Since `__index` is only called when a key is missing in the table, `MyEnum.A` an
     ```
 
 - Use a **single** empty line to express groups when useful. Do not start blocks with a blank line. Excess empty lines harm whole-file readability.
-```lua
-local Foo = require(Common.Foo)
+    ```lua
+    local Foo = require(Common.Foo)
 
-local function gargle()
-    -- gargle gargle
-end
+    local function gargle()
+        -- gargle gargle
+    end
 
-Foo.frobulate()
-Foo.frobulate()
+    Foo.frobulate()
+    Foo.frobulate()
 
-Foo.munt()
-```
+    Foo.munt()
+    ```
 
 - Use one statement per line. Put function bodies on new lines.
     <p class="style-good">Good:</p>
@@ -508,19 +508,19 @@ Foo.munt()
 - For multiple line `if` expressions, put the `then` and `else` at the start of new lines, each indented once.
     <p class="style-good">Good:</p>
     ```lua
-    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName()
+    local scale = if someReallyLongConditionName or someOtherReallyLongConditionName
         then 1
         else 2
     ```
     <p class="style-bad">Bad:</p>
     ```lua
-    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName() then 1
+    local scale = if someReallyLongConditionName or someOtherReallyLongConditionName then 1
         else 2
 
-    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName()
+    local scale = if someReallyLongConditionName or someOtherReallyLongConditionName
         then 1 else 2
 
-    local scale = if someReallyLongFlagName() or someOtherReallyLongFlagName() then
+    local scale = if someReallyLongConditionName or someOtherReallyLongConditionName then
         1 else 2
     ```
 - If the `if` expression won't fit on three lines, convert it to a normal `if` statement.
@@ -528,8 +528,8 @@ Foo.munt()
     ```lua
     local scale
     if
-        someReallyLongFlagName()
-        or someOtherReallyLongFlagName()
+        someReallyLongConditionName
+        or someOtherReallyLongConditionName
     then
         scale = Vector2.new(1, 1) + someVectorOffset
             + someOtherVector
@@ -540,8 +540,8 @@ Foo.munt()
     ```
     <p class="style-bad">Bad:</p>
     ```lua
-    local scale = if someReallyLongFlagName()
-        or someOtherReallyLongFlagName()
+    local scale = if someReallyLongConditionName
+        or someOtherReallyLongConditionName
         then Vector2.new(1, 1) + someVectorOffset
             + someOtherVector
         else Vector2.new(1, 1) + someNewVectorOffset
