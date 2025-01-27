@@ -6,7 +6,7 @@
 
 .md-typeset .style-good + .highlight code {
 	margin-top: 0;
-	background-color: #ecffe5;
+	background-color: rgb(30, 67, 0);
 }
 
 .md-typeset .style-bad {
@@ -17,7 +17,7 @@
 
 .md-typeset .style-bad + .highlight code {
 	margin-top: 0;
-	background-color: #ffecec;
+	background-color: rgb(62, 0, 0);
 }
 
 .md-typeset .style-exception {
@@ -28,5 +28,5 @@
 
 .md-typeset .style-exception + .highlight code {
 	margin-top: 0;
-	background-color: #fffaf1;
+	background-color: rgb(59, 38, 0);
 }
