@@ -274,19 +274,48 @@ Foo.munt()
     foo(5,6 ,7)
     ```
 - When creating blocks, inline any opening syntax elements.
-<p class="style-good">Good:</p>
+    <p class="style-good">Good:</p>
     ```lua
     local foo = {
-    bar = 2,
-}
+        bar = 2,
+    }
 
-if foo then
-    -- do something
-end
-
+    if foo then
+        -- do something
+    end
     ```
+
     <p class="style-bad">Bad:</p>
     ```lua
     local friends = {"bob","amy" ,"joe"}
     foo(5,6 ,7)
     ```
+- Avoid putting curly braces for tables on their own line. Doing so harms readability, since it forces the reader to move to another line in an awkward spot in the statement.
+    <p class="style-good">Good:</p>
+    ```lua
+local foo = {
+    bar = {
+        baz = "baz",
+    },
+}
+
+frob({
+    x = 1,
+})
+    ```
+    <p class="style-bad">Bad:</p>
+    ```lua
+local foo =
+{
+    bar =
+
+    {
+        baz = "baz",
+    },
+}
+
+frob(
+{
+    x = 1,
+})
+```
